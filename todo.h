@@ -1,28 +1,18 @@
-#ifndef TODO_H
-#define TODO_H
+#ifndef TODO_LIST_H
+#define TODO_LIST_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#define MAX_TASKS 10
+#define MAX_DESC_LEN 100
 
-struct Task {
-    char* description;  
-    int priority;       
-};
+typedef struct {
+    char description[MAX_DESC_LEN];
+    int priority;
+    int completed; // 0 = not completed, 1 = completed
+} Task;
 
-struct TaskManager {
-    struct Task* tasks;  
-    int task_count;      
-};
+void add_task(Task tasks[], int *task_count);
+void update_task(Task tasks[], int task_count);
+void delete_task(Task tasks[], int *task_count);
+void display_tasks(Task tasks[], int task_count);
 
-void allocate_task_description(struct Task *task, const char* desc);
-void free_task(struct Task* task);
-void free_all_tasks(struct TaskManager* tm);
-void add_task(struct TaskManager* tm, const char* description);
-void display_tasks(struct TaskManager* tm);
-void update_task(struct TaskManager* tm, int index, const char* new_description);
-void delete_task(struct TaskManager* tm, int index);
-void execute_option(int choice, struct TaskManager* tm);
-void menu(struct TaskManager* tm);
-
-#endif
+#endif // TODO_LIST_H

@@ -1,115 +1,137 @@
-# include "todo.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-void allocate_task_description(struct Task *task,const char* desc){
-    size_t lenght = strlen(desc) + 1;
+#include "todo.h"
 
-    task->description = (char *) malloc(lenght * sizeof(char));
-
-    if (task->description == NULL){
-        printf("Error: Memory allocation failed");
-        exit(1);
-    }
-
-    strcpy(task->description, desc);
-}
-
-void free_task(struct Task *task){
-    if (task->description != NULL){
-        free(task->description);
-        task->description = NULL;
-    }
-}
-
-void add_task(struct TaskManager* tm, const char description){
-
-    tm->tasks = realloc(tm->tasks, (tm->task_count + 1) * sizeof(struct Task));
-    if(tm->tasks == NULL){
-        printf("Error: Memory allocation");
-        exit(1);
-    }
-    struct Task new_task;
-    alllocate_task_description(&new_task, description);
-    printf("\n-------------------------------\n");
-    new_task.priority = 1;
-    tm->tasks[tm->task_count] = new_task;
-    tm->task_count++;
-}
-
-void display_tasks(struct TaskManager* tm){
-    if(tm->task_count == 0){
-        printf("No tasks to display");
+void add_task(Task tasks[], int *task_count) {
+    if (*task_count >= MAX_TASKS) {
+        printf("Task manager is full. Delete some tasks.\n");
         return;
     }
 
-    for(int i = 0; i < tm->task_count; i++){
-        printf("Task %d: %s (Priority %d)\n", i + 1, tm->tasks[i].description, tm->tasks[i].priority);
-    }    
+    printf("Enter task description: ");
+    getchar(); // Clear the input buffer
+    fgets(tasks[*task_count].description, MAX_DESC_LEN, stdin);
+    tasks[*task_count].description[strcspn(tasks[*task_count].description, "\n")] = '\0'; // Remove newline
+
+    printf("Enter task priority (1-5): ");
+    scanf("%d", &tasks[*task_count].priority);
+
+    tasks[*task_count].completed = 0; 
+    (*task_count)++;
+    printf("Task added successfully.\n");
 }
 
-void update_task(struct TaskManager* tm, int index, const char* new_description){
-    
+void update_task(Task tasks[], int task_count) {
+    if (task_count == 0) {
+        printf("No tasks to update.\n");
+        return;
+    }
+
+    int index;
+    printf("Enter task number to update (1-%d): ", task_count);
+    scanf("%d", &index);
+
+    if (index < 1 || index > task_count) {
+        printf("Invalid task number.\n");
+        return;
+    }
+
+    index--; 
+
+    printf("Updating Task %d:\n", index + 1);
+    printf("Enter new description: ");
+    getchar(); // Clear the input buffer
+    fgets(tasks[index].description, MAX_DESC_LEN, stdin);
+    tasks[index].description[strcspn(tasks[index].description, "\n")] = '\0';
+
+    printf("Enter new priority (1-5): ");
+    scanf("%d", &tasks[index].priority);
+
+    printf("Mark as completed? (1 = Yes, 0 = No): ");
+    scanf("%d", &tasks[index].completed);
+
+    printf("Task updated successfully.\n");
 }
 
-void execute_option(int choice, struct TaskManager* tm){
-    switch (choice){
-        case 1:
-            // add_task(tm, "New Task");
-            printf("Test: Add Task\n");
-            break;
-        case 2:
-            printf("Test: Display Tasks\n");
-            // display_tasks(tm);
-            break;
-        case 3:
-            printf("Test: Update Task\n");
-            // update_task(tm, 0, "Upload Task");
-            break;
-        case 4:
-            printf("Test: Delete Task\n");
-            // delete_task(tm, 0);
-            break;
-        case 5:
-            exit(0);
-        default:
-            printf("Invalid input. Try again.\n");
+void delete_task(Task tasks[], int *task_count) {
+    if (*task_count == 0) {
+        printf("No tasks to delete.\n");
+        return;
+    }
+
+    int index;
+    printf("Enter task number to delete (1-%d): ", *task_count);
+    scanf("%d", &index);
+
+    if (index < 1 || index > *task_count) {
+        printf("Invalid task number.\n");
+        return;
+    }
+
+    index--; // Convert to 0-based index
+
+    // Shift tasks to fill the gap
+    for (int i = index; i < *task_count - 1; i++) {
+        tasks[i] = tasks[i + 1];
+    }
+
+    (*task_count)--;
+    printf("Task deleted successfully.\n");
+}
+
+void display_tasks(Task tasks[], int task_count) {
+    if (task_count == 0) {
+        printf("No tasks to display.\n");
+        return;
+    }
+
+    printf("\nTo-Do List:\n");
+    for (int i = 0; i < task_count; i++) {
+        printf("%d. %s (Priority: %d, Completed: %s)\n",
+               i + 1,
+               tasks[i].description,
+               tasks[i].priority,
+               tasks[i].completed ? "Yes" : "No");
     }
 }
 
-void menu(struct TaskManager* tm){
-    int choice; 
+int main() {
+    Task tasks[MAX_TASKS];
+    int task_count = 0;
+
+    int choice;
     do {
-        printf("\nTask Manager Menu\n");
-        printf("-------------------------------\n");
-        printf("1. Add a New Task.\n");
-        printf("2. View All Tasks.\n");
-        printf("3. Update Task.\n");
-        printf("4. Delete a Task\n");
+        printf("\nTo-Do List Menu:\n");
+        printf("1. Add Task\n");
+        printf("2. Update Task\n");
+        printf("3. Delete Task\n");
+        printf("4. Display Tasks\n");
         printf("5. Exit\n");
-        printf("-------------------------------\n");
-        printf("Choose an option: ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        execute_option(choice, tm);
+        switch (choice) {
+            case 1:
+                add_task(tasks, &task_count);
+                break;
+            case 2:
+                update_task(tasks, task_count);
+                break;
+            case 3:
+                delete_task(tasks, &task_count);
+                break;
+            case 4:
+                display_tasks(tasks, task_count);
+                break;
+            case 5:
+                printf("Exiting To-Do List Manager.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
     } while (choice != 5);
-
-}
-
-void free_tm(struct TaskManager* tm){
-    for(int i = 0; i < tm->task_count; i++){
-        free_task(&tm->tasks[i]);
-    }
-    free(tm->tasks);
-    tm->tasks = NULL;
-    tm->task_count = 0;
-}
-
-int main(){
-    struct TaskManager tm = {NULL, 0};
-
-    menu(&tm);
-
-    free_tm(&tm);
 
     return 0;
 }
-
