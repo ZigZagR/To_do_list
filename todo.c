@@ -95,6 +95,33 @@ void display_tasks(TM *tm) {
                tm->tasks[i].priority,
                tm->tasks[i].completed ? "Yes" : "No");
     }
+    printf("Press enter to continue... ");
+    while (getchar() != '\n');
+    getchar();    
+}
+
+void complete_task(TM *tm) {
+    if (tm->task_count == 0) {
+        printf("\nNo tasks to complete.\n");
+        return;
+    }
+
+    int index;
+    printf("Enter task number to complete (1-%d): ", tm->task_count);
+    scanf("%d", &index);
+
+    if (index < 1 || index > tm->task_count) {
+        printf("Invalid task number.\n");
+        return;
+    }
+
+    index--; // IT'S MAGIC AIN'T EXPLAINING SHIT
+
+    printf("Mark as completed? (1 = Yes, 0 = No): ");
+    scanf("%d", &tm->tasks[index].completed);
+
+    printf("Task updated successfully.\n");
+
 }
 
 int main() {
@@ -108,7 +135,8 @@ int main() {
         printf("2. Update Task\n");
         printf("3. Delete Task\n");
         printf("4. Display Tasks\n");
-        printf("5. Exit\n");
+        printf("5. Complete Task\n");
+        printf("6. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -126,12 +154,15 @@ int main() {
                 display_tasks(&tm);
                 break;
             case 5:
+                complete_task(&tm);
+                break;
+            case 6:
                 printf("Exiting To-Do List Manager.\n");
                 break;
             default:
                 printf("Invalid choice. Please try again.\n");
         }
-    } while (choice != 5);
+    } while (choice != 6);
 
     return 0;
 }
