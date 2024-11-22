@@ -4,68 +4,68 @@
 
 #include "todo.h"
 
-void add_task(Task tasks[], int *task_count) {
-    if (*task_count >= MAX_TASKS) {
+void add_task(TM *tm) {
+    if (tm->task_count >= MAX_TASKS) {
         printf("Task manager is full. Delete some tasks.\n");
         return;
     }
 
     printf("Enter task description: ");
     getchar(); // Clear the input buffer
-    fgets(tasks[*task_count].description, MAX_DESC_LEN, stdin);
-    tasks[*task_count].description[strcspn(tasks[*task_count].description, "\n")] = '\0'; // Remove newline
+    fgets(tm->tasks[tm->task_count].description, MAX_DESC_LEN, stdin);
+    tm->tasks[tm->task_count].description[strcspn(tm->tasks[tm->task_count].description, "\n")] = '\0'; // Remove newline
 
     printf("Enter task priority (1-5): ");
-    scanf("%d", &tasks[*task_count].priority);
+    scanf("%d", &tm->tasks[tm->task_count].priority);
 
-    tasks[*task_count].completed = 0; 
-    (*task_count)++;
+    tm->tasks[tm->task_count].completed = 0; 
+    (tm->task_count)++;
     printf("Task added successfully.\n");
 }
 
-void update_task(Task tasks[], int task_count) {
-    if (task_count == 0) {
+void update_task(TM *tm) {
+    if (tm->task_count == 0) {
         printf("No tasks to update.\n");
         return;
     }
 
     int index;
-    printf("Enter task number to update (1-%d): ", task_count);
+    printf("Enter task number to update (1-%d): ", tm->task_count);
     scanf("%d", &index);
 
-    if (index < 1 || index > task_count) {
+    if (index < 1 || index > tm->task_count) {
         printf("Invalid task number.\n");
         return;
     }
 
-    index--; 
+    index--; // IT'S MAGIC AIN'T EXPLAINING SHIT
 
     printf("Updating Task %d:\n", index + 1);
     printf("Enter new description: ");
     getchar(); // Clear the input buffer
-    fgets(tasks[index].description, MAX_DESC_LEN, stdin);
-    tasks[index].description[strcspn(tasks[index].description, "\n")] = '\0';
+    fgets(tm->tasks[index].description, MAX_DESC_LEN, stdin);
+    tm->tasks[index].description[strcspn(tm->tasks[index].description, "\n")] = '\0';
 
     printf("Enter new priority (1-5): ");
-    scanf("%d", &tasks[index].priority);
+    scanf("%d", &tm->tasks[index].priority);
 
     printf("Mark as completed? (1 = Yes, 0 = No): ");
-    scanf("%d", &tasks[index].completed);
+    scanf("%d", &tm->tasks[index].completed);
 
     printf("Task updated successfully.\n");
 }
 
-void delete_task(Task tasks[], int *task_count) {
-    if (*task_count == 0) {
+void delete_task(TM *tm) {
+    if (tm->task_count == 0) {
         printf("No tasks to delete.\n");
         return;
     }
 
     int index;
-    printf("Enter task number to delete (1-%d): ", *task_count);
+    printf("Enter task number to delete (1-%d): ", tm->task_count);
     scanf("%d", &index);
 
-    if (index < 1 || index > *task_count) {
+    if (index < 1 || index > tm->task_count) {
         printf("Invalid task number.\n");
         return;
     }
@@ -73,33 +73,33 @@ void delete_task(Task tasks[], int *task_count) {
     index--; // Convert to 0-based index
 
     // Shift tasks to fill the gap
-    for (int i = index; i < *task_count - 1; i++) {
-        tasks[i] = tasks[i + 1];
+    for (int i = index; i < tm->task_count - 1; i++) {
+        tm->tasks[i] = tm->tasks[i + 1];
     }
 
-    (*task_count)--;
+    (tm->task_count)--;
     printf("Task deleted successfully.\n");
 }
 
-void display_tasks(Task tasks[], int task_count) {
-    if (task_count == 0) {
-        printf("No tasks to display.\n");
+void display_tasks(TM *tm) {
+    if (tm->task_count == 0) {
+        printf("\nNo tasks to display.\n");
         return;
     }
 
     printf("\nTo-Do List:\n");
-    for (int i = 0; i < task_count; i++) {
+    for (int i = 0; i < tm->task_count; i++) {
         printf("%d. %s (Priority: %d, Completed: %s)\n",
                i + 1,
-               tasks[i].description,
-               tasks[i].priority,
-               tasks[i].completed ? "Yes" : "No");
+               tm->tasks[i].description,
+               tm->tasks[i].priority,
+               tm->tasks[i].completed ? "Yes" : "No");
     }
 }
 
 int main() {
-    Task tasks[MAX_TASKS];
-    int task_count = 0;
+    TM tm;
+    tm.task_count = 0;
 
     int choice;
     do {
@@ -114,16 +114,16 @@ int main() {
 
         switch (choice) {
             case 1:
-                add_task(tasks, &task_count);
+                add_task(&tm);
                 break;
             case 2:
-                update_task(tasks, task_count);
+                update_task(&tm);
                 break;
             case 3:
-                delete_task(tasks, &task_count);
+                delete_task(&tm);
                 break;
             case 4:
-                display_tasks(tasks, task_count);
+                display_tasks(&tm);
                 break;
             case 5:
                 printf("Exiting To-Do List Manager.\n");

@@ -10,9 +10,14 @@ typedef struct {
     int completed; // 0 = not completed, 1 = completed
 } Task;
 
-void add_task(Task tasks[], int *task_count);
-void update_task(Task tasks[], int task_count);
-void delete_task(Task tasks[], int *task_count);
-void display_tasks(Task tasks[], int task_count);
+typedef struct {
+    Task tasks[MAX_TASKS];
+    int task_count;
+} TM;
+
+void add_task(TM *tm);
+void update_task(TM *tm);
+void delete_task(TM *tm);
+void display_tasks(TM *tm);
 
 #endif // TODO_LIST_H
