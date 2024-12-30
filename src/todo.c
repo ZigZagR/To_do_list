@@ -95,7 +95,7 @@ void display_tasks(TM *tm) {
                tm->tasks[i].priority,
                tm->tasks[i].completed ? "Yes" : "No");
     }
-    printf("Press enter to continue... ");
+    printf("Press enter to continue...");
     while (getchar() != '\n');
     getchar();    
 }
