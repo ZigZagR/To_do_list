@@ -3,7 +3,7 @@
 
 #define MAX_TASKS 10
 #define MAX_DESC_LEN 100
-
+#define TASK_FILE "tasks.txt"
 typedef struct {
     char description[MAX_DESC_LEN];
     int priority;
@@ -15,9 +15,12 @@ typedef struct {
     int task_count;
 } TM;
 
-void add_task(TM *tm);
-void update_task(TM *tm);
-void delete_task(TM *tm);
-void display_tasks(TM *tm);
+int add_task(TM *tm);
+int update_task(TM *tm);
+int delete_task(TM *tm);
+int display_tasks(TM *tm);
+int complete_task(TM *tm);
+int save(TM *tm);
+int load(TM *tm);
 
 #endif // TODO_LIST_H
