@@ -3,7 +3,7 @@
 
 #define MAX_TASKS 10
 #define MAX_DESC_LEN 100
-#define TASK_FILE "tasks.txt"
+#define TASK_FILE "../tasks.txt"
 typedef struct {
     char description[MAX_DESC_LEN];
     int priority;
