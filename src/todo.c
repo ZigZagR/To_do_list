@@ -138,7 +138,7 @@ int delete_task(TM *tm) {
     return 1;
 }
 
-int display_tasks(TM *tm) {
+int display_tasks(const TM *tm) {
     if (tm->task_count == 0) {
         printf("\nNo tasks to display.\n");
         return 0;
